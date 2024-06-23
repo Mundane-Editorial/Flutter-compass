@@ -39,6 +39,7 @@ class CompassViewPainter extends CustomPainter {
 
   late final _majorTicks = _layoutScale(majorTickerCount);
   late final _minorTicks = _layoutScale(minorTickerCount);
+  late final _angleDegree = _layoutAngleScale(_majorTicks);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -78,6 +79,33 @@ class CompassViewPainter extends CustomPainter {
       canvas.drawLine(center + tickStart, center + tickEnd, minorScalePaint);
     }
 
+    //TODO : Paint Angle degree code block
+    for (final angle in _angleDegree) {
+      final textPadding = majorTickLength - size.width * 0.02;
+      final textPainter = TextSpan(
+        text: angle.toStringAsFixed(0),
+        style: majorScaleStyle,
+      ).toPainter()
+        ..layout();
+
+      final layoutOffset = Offset.fromDirection(
+        _correctAngle(angle).toRadian(),
+        radius - textPadding,
+      );
+
+      final offset = center + layoutOffset;
+
+      canvas.restore();
+      canvas.save();
+
+      canvas.translate(offset.dx, offset.dy);
+      canvas.rotate(angle.toRadian());
+      canvas.translate(-offset.dx, -offset.dy);
+
+      textPainter.paint(
+          canvas, Offset(offset.dx - (textPainter.width / 2), offset.dy));
+    }
+
     canvas.restore();
   }
 
@@ -92,6 +120,20 @@ class CompassViewPainter extends CustomPainter {
     return List.generate(ticks, (index) => index * scale);
   }
 
+  List<double> _layoutAngleScale(List<double> ticks) {
+    List<double> angle = [];
+    for (var i = 0; i < ticks.length; i++) {
+      if (i == ticks.length - 1) {
+        double degreeVal = (ticks[i] + 360) / 2;
+        angle.add(degreeVal);
+      } else {
+        double degreeVal = (ticks[i] + ticks[i + 1]) / 2;
+        angle.add(degreeVal);
+      }
+    }
+    return angle;
+  }
+
   double _correctAngle(double angle) => angle - 90;
 }
 
@@ -99,4 +141,9 @@ typedef CardinalityMap = Map<num, String>;
 
 extension on num {
   double toRadian() => this * pi / 180;
+}
+
+extension on TextSpan {
+  TextPainter toPainter({TextDirection textDirection = TextDirection.ltr}) =>
+      TextPainter(text: this, textDirection: textDirection);
 }
