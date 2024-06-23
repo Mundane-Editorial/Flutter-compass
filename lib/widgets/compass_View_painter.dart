@@ -106,6 +106,37 @@ class CompassViewPainter extends CustomPainter {
           canvas, Offset(offset.dx - (textPainter.width / 2), offset.dy));
     }
 
+    //TODO : Paint Cardinality code block
+    for (final cardinality in cardinalityMap.entries) {
+      final textPadding = majorTickLength + size.width * 0.015;
+
+      final angle = cardinality.key.toDouble();
+      final text = cardinality.value;
+      final textPainter = TextSpan(
+        text: text,
+        style:
+            cardinalityStyle.copyWith(color: text == 'N' ? AppColor.red : null),
+      ).toPainter()
+        ..layout();
+
+      final layoutOffset = Offset.fromDirection(
+        _correctAngle(angle).toRadian(),
+        radius - textPadding,
+      );
+
+      final offset = center + layoutOffset;
+
+      canvas.restore();
+      canvas.save();
+
+      canvas.translate(offset.dx, offset.dy);
+      canvas.rotate(angle.toRadian());
+      canvas.translate(-offset.dx, -offset.dy);
+
+      textPainter.paint(
+          canvas, Offset(offset.dx - (textPainter.width / 2), offset.dy));
+    }
+
     canvas.restore();
   }
 
