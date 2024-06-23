@@ -59,6 +59,42 @@ class _CompassScreenState extends State<CompassScreen> {
                   ),
                 ),
                 CenterDisplayMeter(direction: headingToDegree(direction!)),
+                Positioned.fill(
+                  top: size.height * 0.28,
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration:
+                            BoxDecoration(color: AppColor.red, boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade500,
+                            blurRadius: 5,
+                            offset: Offset(10, 10),
+                          )
+                        ]),
+                      ),
+                      Container(
+                        width: 5,
+                        height: size.width * 0.21,
+                        decoration: BoxDecoration(
+                          color: AppColor.red,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade500,
+                              blurRadius: 5,
+                              offset: Offset(10, 10),
+                            )
+                          ],
+                          borderRadius: const BorderRadius.vertical(
+                            bottom: Radius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
               ],
             );
           }),
