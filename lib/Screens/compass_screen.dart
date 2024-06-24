@@ -15,8 +15,53 @@ class CompassScreen extends StatefulWidget {
   State<CompassScreen> createState() => _CompassScreenState();
 }
 
-class _CompassScreenState extends State<CompassScreen> {
+class _CompassScreenState extends State<CompassScreen>
+    with SingleTickerProviderStateMixin {
   double? direction;
+  AnimationController? _controller;
+  Animation<double>? _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 400),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller!.dispose();
+    super.dispose();
+  }
+
+  void _updatedDirection(double newDirection) {
+    if (direction != null) {
+      double startDirection = direction!;
+      double endDirection = newDirection;
+
+      if ((endDirection - startDirection).abs() > 180) {
+        if (endDirection > startDirection) {
+          startDirection += 360;
+        } else {
+          endDirection += 360;
+        }
+      }
+
+      _animation = Tween<double>(
+        begin: startDirection,
+        end: endDirection,
+      ).animate(CurvedAnimation(parent: _controller!, curve: Curves.easeInOut));
+      _controller!.forward(from: 0);
+    }
+
+    setState(() {
+      direction = newDirection;
+    });
+  }
+
+  // TODO : add smooth rotation effect........
 
   double headingToDegree(double heading) {
     return heading < 0 ? 360 - heading.abs() : heading;
